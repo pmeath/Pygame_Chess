@@ -3,14 +3,26 @@ class piece:
 		piece.colour = colour
 		piece.location = location
 
+
 class pawn(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.has_moved = False
+		
+	def first_move():
+		piece.location[1] += 2
+		piece.has_moved = True
+	#def promote():
 		
 	def move():
-		location[1] += 1
-	def first_move():
-		location[1] += 2
+		piece.location[1] += 1
+		piece.has_moved = True
+		if (location[1] == 8):
+			piece.promote
+	def take(direction):
+		piece.location[1] += 1
+		piece.location[0] += direction
+		piece.has_moved = True
 		
 class knight(piece):
 	def __init__(piece, colour, location):
@@ -32,16 +44,32 @@ class queen(piece):
 class king(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.has_moved = False
+	def move(direction):
+		piece.has_moved = True
 		
+pieces = []
 def populate():
-
-	for(x in range(8)):
-		"pawn"+x = pawn("white", (x, 2))	
-	rook1 = rook("white", (1, 1))
-	rook2 = rook("white", (8, 1))
-	bishop1 = bishop("white", (2, 1))
-	bishop2 = bishop("white", (7, 1))
-	knight1 = knight("white", (3, 1))
-	knight2 = knight("white", (6, 1))
-	queen = queen("white", (4, 1))
-	king = king("white", (5, 1))
+	c = 0
+	for c <= 1, c++:
+		for x in range(8):
+			pieces.append(pawn("white", [x, 2 +c*5]))
+		pieces.append(rook("white", [1, 1+c*7]))
+		pieces.append(rook("white", [8, 1+c*7]))
+		pieces.append(bishop("white", [2, 1+c*7]))
+		pieces.append(bishop("white", [7, 1+c*7]))
+		pieces.append(knight("white", [3, 1+c*7]))
+		pieces.append(knight("white", [6, 1+c*7]))
+		pieces.append(queen("white", [4, 1+c*7]))
+		pieces.append(king("white", [5, 1+c*7]))
+	
+#	for x in range(8):
+#		pieces.append(pawn("black", [x, 7]))
+#	pieces.append(rook("black", [1, 8]))
+#	pieces.append(rook("black", [8, 8]))
+#	pieces.append(bishop("black", [2, 8]))
+#	pieces.append(bishop("black", [7, 8]))
+#	pieces.append(knight("black", [3, 8]))
+#	pieces.append(knight("black", [6, 8]))
+#	pieces.append(queen("black", [4, 8]))
+#	pieces.append(king("black", [5, 8]))
