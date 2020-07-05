@@ -2,25 +2,32 @@ import pygame
 from pygame import *
 import os
 import sys
-from piece_objects import *
+from pieces import *
 
 print(os.getcwd())
+
+
 def set_dir():
 	abspath = os.path.abspath(sys.argv[0])
 	dname = os.path.dirname(abspath)
 	os.chdir(dname)
-	
-	
-def draw_pieces():
-	img = image.load("white_pawn.png")
-	for i in pieces:
-		screen.blit(transform.scale(img, (i.location[0], i.location[1]))
-		print(str(i))
+
 
 screen = display.set_mode((600,600), HWSURFACE|DOUBLEBUF)
+tile_size = (int(screen.get_size()[0]/8), int((screen.get_size()[1]/8)))
 
-tile_size = (screen.get_size()[0]/8, screen.get_size()[1]/8)
-print(tile_size)
+pawn_img = image.load("white_pawn.png")
+knight_img = image.load("white_pawn.png")
+bishop_img = image.load("white_bishop.png")
+rook_img = image.load("white_pawn.png")
+queen_img = image.load("white_pawn.png")
+king_img = image.load("white_pawn.png")
+
+def draw_pieces():
+
+	for i in pieces:
+		screen.blit(transform.scale(i.img, tile_size), (i.location[0]*tile_size[0], i.location[1]*tile_size[1]))
+		print(str(i))
 
 def main():
     # initialize the pygame module
@@ -30,7 +37,7 @@ def main():
 	display.set_icon(logo)
 	display.set_caption("Chess")
     # create a surface on screen
-	
+
 	bkg = image.load("Chess_board.png")
 	screen.blit(transform.scale(bkg, screen.get_size()), (0, 0))
 	populate()
@@ -48,8 +55,8 @@ def main():
 			if event.type == QUIT:
 				# change the value to False, to exit the main loop
 				running = False
-			
-				
+
+
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":

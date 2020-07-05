@@ -1,3 +1,5 @@
+from pygame_Chess import *
+
 class piece:
 	def __init__(piece, colour, location):
 		piece.colour = colour
@@ -7,13 +9,14 @@ class piece:
 class pawn(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.img = pawn_img
 		piece.has_moved = False
-		
+
 	def first_move():
 		piece.location[1] += 2
 		piece.has_moved = True
 	#def promote():
-		
+
 	def move():
 		piece.location[1] += 1
 		piece.has_moved = True
@@ -27,23 +30,27 @@ class pawn(piece):
 class knight(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
-		
+		piece.img = knight_img
 		
 class bishop(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.img = bishop_img
 		
 class rook(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.img = rook_img
 		
 class queen(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.img = queen_img
 		
 class king(piece):
 	def __init__(piece, colour, location):
 		super().__init__(colour, location)
+		piece.img = king_img
 		piece.has_moved = False
 	def move(direction):
 		piece.has_moved = True
@@ -51,17 +58,17 @@ class king(piece):
 pieces = []
 def populate():
 	c = 0
-	for c <= 1, c++:
+	for c in range(2):
 		for x in range(8):
-			pieces.append(pawn("white", [x, 2 +c*5]))
-		pieces.append(rook("white", [1, 1+c*7]))
-		pieces.append(rook("white", [8, 1+c*7]))
-		pieces.append(bishop("white", [2, 1+c*7]))
-		pieces.append(bishop("white", [7, 1+c*7]))
-		pieces.append(knight("white", [3, 1+c*7]))
-		pieces.append(knight("white", [6, 1+c*7]))
-		pieces.append(queen("white", [4, 1+c*7]))
-		pieces.append(king("white", [5, 1+c*7]))
+			pieces.append(pawn(c, [x, 1 + c*5]))
+		pieces.append(rook(c, [0, c*7]))
+		pieces.append(rook(c, [7, c*7]))
+		pieces.append(bishop(c, [2, c*7]))
+		pieces.append(bishop(c, [5, c*7]))
+		pieces.append(knight(c, [1, c*7]))
+		pieces.append(knight(c, [6, c*7]))
+		pieces.append(queen(c, [3, c*7]))
+		pieces.append(king(c, [4, c*7]))
 	
 #	for x in range(8):
 #		pieces.append(pawn("black", [x, 7]))
