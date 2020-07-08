@@ -14,6 +14,7 @@ def set_dir():
 screen = display.set_mode((600, 600), HWSURFACE | DOUBLEBUF)
 tile_size = (int(screen.get_size()[0] / 8), int((screen.get_size()[1] / 8)))
 
+board = image.load("Chess_board.png")
 white_pawn_img = transform.scale(image.load("white_pawn.png"), tile_size)
 white_knight_img = transform.scale(image.load("white_knight.png"), tile_size)
 white_bishop_img = transform.scale(image.load("white_bishop.png"), tile_size)
@@ -27,17 +28,45 @@ black_rook_img = transform.scale(image.load("black_rook.png"), tile_size)
 black_queen_img = transform.scale(image.load("black_queen.png"), tile_size)
 black_king_img = transform.scale(image.load("black_king.png"), tile_size)
 marker_img = transform.scale(image.load("marker.png"), tile_size)
-
+select_img = transform.scale(image.load("selected.png"), tile_size)
 
 def draw_pieces():
+    screen.blit(transform.scale(board, screen.get_size()), (0, 0))
     for i in pieces:
         screen.blit(i.img[i.colour], (i.location[0] * tile_size[0], i.location[1] * tile_size[1]))
 
 
 def right_click(position):
-    click_location = (((position[0]//tile_size[0])*tile_size[0], (position[1]//tile_size[1])*tile_size[1]))
+    click_location = ((position[0] // tile_size[0]) * tile_size[0], (position[1] // tile_size[1]) * tile_size[1])
+    draw_pieces()
     screen.blit(marker_img, click_location)
     display.flip()
+
+
+active_piece = 0
+
+
+def left_click(position):
+    tile_clicked = [(position[0] // tile_size[0]), (position[1] // tile_size[1])]
+    click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
+    for i in pieces:
+        if i.location == tile_clicked:
+            global active_piece
+            if i == active_piece:
+                active_piece = 0
+                draw_pieces()
+                display.flip()
+            elif i.colour == active_piece.colour:
+                draw_pieces()
+                screen.blit(select_img, click_location)
+                display.flip()
+                active_piece = i
+            return
+    if active_piece != 0:
+        active_piece.location = tile_clicked
+        draw_pieces()
+        display.flip()
+        active_piece = 0
 
 
 def main():
@@ -49,8 +78,6 @@ def main():
     display.set_caption("Chess")
     # create a surface on screen
 
-    bkg = image.load("Chess_board.png")
-    screen.blit(transform.scale(bkg, screen.get_size()), (0, 0))
     populate()
     draw_pieces()
     display.flip()
@@ -64,14 +91,14 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 position = mouse.get_pos()
+                if event.button == 1:
+                    left_click(position)
                 if event.button == 3:
                     right_click(position)
 
             if event.type == QUIT:
                 # change the value to False, to exit the main loop
                 running = False
-
-
 
 
 # run the main function only if this module is executed as the main script

@@ -79,5 +79,5 @@ def populate():
         pieces.append(Bishop(c, [5, c * 7]))
         pieces.append(Knight(c, [1, c * 7]))
         pieces.append(Knight(c, [6, c * 7]))
-        pieces.append(Queen(c, [3, c * 7]))
-        pieces.append(King(c, [4, c * 7]))
+        pieces.append(Queen(c, [4, c * 7]))
+        pieces.append(King(c, [3, c * 7]))
