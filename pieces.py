@@ -65,6 +65,8 @@ class King(Piece):
         Piece.has_moved = True
 
 
+null_piece = Piece(-1, [-1, -1])
+active_piece = null_piece
 pieces = []
 
 

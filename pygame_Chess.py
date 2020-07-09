@@ -30,6 +30,7 @@ black_king_img = transform.scale(image.load("black_king.png"), tile_size)
 marker_img = transform.scale(image.load("marker.png"), tile_size)
 select_img = transform.scale(image.load("selected.png"), tile_size)
 
+
 def draw_pieces():
     screen.blit(transform.scale(board, screen.get_size()), (0, 0))
     for i in pieces:
@@ -43,17 +44,18 @@ def right_click(position):
     display.flip()
 
 
-active_piece = 0
+
 
 
 def left_click(position):
     tile_clicked = [(position[0] // tile_size[0]), (position[1] // tile_size[1])]
     click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
+    global pieces
     for i in pieces:
         if i.location == tile_clicked:
             global active_piece
             if i == active_piece:
-                active_piece = 0
+                active_piece = null_piece
                 draw_pieces()
                 display.flip()
             elif i.colour == active_piece.colour:
@@ -61,12 +63,23 @@ def left_click(position):
                 screen.blit(select_img, click_location)
                 display.flip()
                 active_piece = i
+            elif i.colour + active_piece.colour == 1:
+                pieces.remove(i)
+                active_piece.location = tile_clicked
+                draw_pieces()
+                display.flip()
+            else:
+                draw_pieces()
+                screen.blit(select_img, click_location)
+                display.flip()
+                active_piece = i
             return
-    if active_piece != 0:
+    print(null_piece)
+    if active_piece != null_piece:
         active_piece.location = tile_clicked
         draw_pieces()
         display.flip()
-        active_piece = 0
+        active_piece = null_piece
 
 
 def main():
