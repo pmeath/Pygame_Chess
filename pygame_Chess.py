@@ -44,39 +44,39 @@ def right_click(position):
     display.flip()
 
 
-
-
-
 def left_click(position):
     tile_clicked = [(position[0] // tile_size[0]), (position[1] // tile_size[1])]
     click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
     global pieces
+    global active_piece
     for i in pieces:
         if i.location == tile_clicked:
-            global active_piece
-            if i == active_piece:
+            if i == active_piece:  # deselect the piece
                 active_piece = null_piece
                 draw_pieces()
                 display.flip()
-            elif i.colour == active_piece.colour:
+            elif i.colour == active_piece.colour:  # change selected piece
                 draw_pieces()
                 screen.blit(select_img, click_location)
                 display.flip()
                 active_piece = i
-            elif i.colour + active_piece.colour == 1:
-                pieces.remove(i)
-                active_piece.location = tile_clicked
+            elif i.colour + active_piece.colour == 1:  # capture a piece
+                if active_piece.can_move(tile_clicked):
+                    pieces.remove(i)
+                    active_piece.location = tile_clicked
                 draw_pieces()
                 display.flip()
-            else:
+                active_piece = null_piece
+            else:   # select a piece
                 draw_pieces()
                 screen.blit(select_img, click_location)
                 display.flip()
                 active_piece = i
             return
     print(null_piece)
-    if active_piece != null_piece:
-        active_piece.location = tile_clicked
+    if active_piece != null_piece:  # move to an empty square
+        if active_piece.can_move(tile_clicked):
+            active_piece.location = tile_clicked
         draw_pieces()
         display.flip()
         active_piece = null_piece

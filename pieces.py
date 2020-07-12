@@ -10,20 +10,18 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_pawn_img, black_pawn_img)
+        self.img = (black_pawn_img, white_pawn_img)
         self.has_moved = False
 
-    def first_move(self):
-        self.location[1] += 2
-        self.has_moved = True
-
-    # def promote():
-
-    def move(self):
-        self.location[1] += 1
-        self.has_moved = True
-        if self.location[1] == 8:
-            self.promote
+    def can_move(self, destination):
+        if ((destination[0] - self.location[0]) == 0) & ((destination[1] - self.location[1]) == 1 - (2 * self.colour)):
+            self.has_moved = True
+            return True
+        elif (self.has_moved == False) & ((destination[0] - self.location[0]) == 0) & ((destination[1] - self.location[1]) == 2 - (4 * self.colour)):
+            self.has_moved = True
+            return True
+        else:
+            return False
 
     def take(self, direction):
         Piece.location[1] += 1
@@ -34,35 +32,66 @@ class Pawn(Piece):
 class Knight(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_knight_img, black_knight_img)
+        self.img = (black_knight_img, white_knight_img)
+
+    def can_move(self, destination):
+        if (abs(destination[0] - self.location[0]) == 2) & (abs(destination[1] - self.location[1]) == 1):
+            return True
+        elif (abs(destination[0] - self.location[0]) == 1) & (abs(destination[1] - self.location[1]) == 2):
+            return True
+        else:
+            return False
 
 
 class Bishop(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_bishop_img, black_bishop_img)
+        self.img = (black_bishop_img, white_bishop_img)
+
+    def can_move(self, destination):
+        if abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1]):
+            return True
+        else:
+            return False
 
 
 class Rook(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_rook_img, black_rook_img)
+        self.img = (black_rook_img, white_rook_img)
+
+    def can_move(self, destination):
+        if (destination[0] == self.location[0]) | (destination[1] == self.location[1]):
+            return True
+        else:
+            return False
 
 
 class Queen(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_queen_img, black_queen_img)
+        self.img = (black_queen_img, white_queen_img)
+
+    def can_move(self, destination):
+        if ((destination[0] == self.location[0]) | (destination[1] == self.location[1])) | (abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1])):
+            return True
+        else:
+            return False
 
 
 class King(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
-        self.img = (white_king_img, black_king_img)
+        self.img = (black_king_img, white_king_img)
         self.has_moved = False
 
-    def move(self, direction):
-        Piece.has_moved = True
+    def can_move(self, destination):
+
+        if (abs(destination[0] - self.location[0]) <= 1) & (abs(destination[1] - self.location[1]) <= 1):
+            Piece.has_moved = True
+            return True
+        else:
+            return False
 
 
 null_piece = Piece(-1, [-1, -1])
@@ -71,7 +100,7 @@ pieces = []
 
 
 def populate():
-    c = 0
+    c = 0   # black is 0 and white is 1
     for c in range(2):
         for x in range(8):
             pieces.append(Pawn(c, [x, 1 + c * 5]))
@@ -81,5 +110,5 @@ def populate():
         pieces.append(Bishop(c, [5, c * 7]))
         pieces.append(Knight(c, [1, c * 7]))
         pieces.append(Knight(c, [6, c * 7]))
-        pieces.append(Queen(c, [4, c * 7]))
-        pieces.append(King(c, [3, c * 7]))
+        pieces.append(Queen(c, [3, c * 7]))
+        pieces.append(King(c, [4, c * 7]))
