@@ -17,8 +17,16 @@ class Pawn(Piece):
         if ((destination[0] - self.location[0]) == 0) & ((destination[1] - self.location[1]) == 1 - (2 * self.colour)):
             self.has_moved = True
             return True
-        elif (self.has_moved == False) & ((destination[0] - self.location[0]) == 0) & ((destination[1] - self.location[1]) == 2 - (4 * self.colour)):
+        elif (self.has_moved == False) & ((destination[0] - self.location[0]) == 0) & (
+                (destination[1] - self.location[1]) == 2 - (4 * self.colour)):
             self.has_moved = True
+            return True
+        else:
+            return False
+
+    def can_take(self, destination):
+        if ((destination[1] - self.location[1]) == 1 - (2 * self.colour)) & (
+                abs(destination[0] - self.location[0]) == 1):
             return True
         else:
             return False
@@ -42,6 +50,9 @@ class Knight(Piece):
         else:
             return False
 
+    def can_take(self, destination):
+        return self.can_move(destination)
+
 
 class Bishop(Piece):
     def __init__(self, colour, location):
@@ -53,6 +64,9 @@ class Bishop(Piece):
             return True
         else:
             return False
+
+    def can_take(self, destination):
+        return self.can_move(destination)
 
 
 class Rook(Piece):
@@ -66,6 +80,9 @@ class Rook(Piece):
         else:
             return False
 
+    def can_take(self, destination):
+        return self.can_move(destination)
+
 
 class Queen(Piece):
     def __init__(self, colour, location):
@@ -73,10 +90,14 @@ class Queen(Piece):
         self.img = (black_queen_img, white_queen_img)
 
     def can_move(self, destination):
-        if ((destination[0] == self.location[0]) | (destination[1] == self.location[1])) | (abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1])):
+        if ((destination[0] == self.location[0]) | (destination[1] == self.location[1])) | (
+                abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1])):
             return True
         else:
             return False
+
+    def can_take(self, destination):
+        return self.can_move(destination)
 
 
 class King(Piece):
@@ -93,6 +114,9 @@ class King(Piece):
         else:
             return False
 
+    def can_take(self, destination):
+        return self.can_move(destination)
+
 
 null_piece = Piece(-1, [-1, -1])
 active_piece = null_piece
@@ -100,7 +124,7 @@ pieces = []
 
 
 def populate():
-    c = 0   # black is 0 and white is 1
+    c = 0  # black is 0 and white is 1
     for c in range(2):
         for x in range(8):
             pieces.append(Pawn(c, [x, 1 + c * 5]))

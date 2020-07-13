@@ -49,6 +49,7 @@ def left_click(position):
     click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
     global pieces
     global active_piece
+    global null_piece
     for i in pieces:
         if i.location == tile_clicked:
             if i == active_piece:  # deselect the piece
@@ -61,7 +62,7 @@ def left_click(position):
                 display.flip()
                 active_piece = i
             elif i.colour + active_piece.colour == 1:  # capture a piece
-                if active_piece.can_move(tile_clicked):
+                if active_piece.can_take(tile_clicked):
                     pieces.remove(i)
                     active_piece.location = tile_clicked
                 draw_pieces()
@@ -83,6 +84,7 @@ def left_click(position):
 
 
 def main():
+
     # initialize the pygame module
     init()
     # load and set the logo
