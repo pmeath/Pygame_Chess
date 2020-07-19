@@ -6,6 +6,44 @@ class Piece:
         self.colour = colour
         self.location = location
 
+    def check_path(self, start, end):
+        x1 = start[0]
+        y1 = start[1]
+        x2 = end[0]
+        y2 = end[1]
+        if x2 - x1 < 0:
+            dx = -1
+        elif x2 - x1 > 0:
+            dx = 1
+        else:
+            dx = 0
+
+        if y2 - y1 < 0:
+            dy = -1
+        elif y2 - y1 > 0:
+            dy = 1
+        else:
+            dy = 0
+
+        if dx != 0:
+            y = y1
+            for x in range(x1 + dx, x2, dx):
+                y += dy
+                for i in pieces:
+                    if i.location == [x, y]:
+                        return False
+        elif dy != 0:
+            x = x1
+            for y in range(y1 + dy, y2, dy):
+                x += dx
+                for i in pieces:
+                    if i.location == [x, y]:
+                        return False
+
+        return True
+
+    can_jump = False
+
 
 class Pawn(Piece):
     def __init__(self, colour, location):
@@ -14,13 +52,17 @@ class Pawn(Piece):
         self.has_moved = False
 
     def can_move(self, destination):
-        if ((destination[0] - self.location[0]) == 0) & ((destination[1] - self.location[1]) == 1 - (2 * self.colour)):
+        if (destination[0] - self.location[0]) != 0:
+            return False
+        elif (destination[1] - self.location[1]) == 1 - (2 * self.colour):
             self.has_moved = True
             return True
-        elif (self.has_moved == False) & ((destination[0] - self.location[0]) == 0) & (
-                (destination[1] - self.location[1]) == 2 - (4 * self.colour)):
-            self.has_moved = True
-            return True
+        elif (self.has_moved is False) & ((destination[1] - self.location[1]) == 2 - (4 * self.colour)):
+            if super().check_path(self.location, destination):
+                self.has_moved = True
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -31,14 +73,10 @@ class Pawn(Piece):
         else:
             return False
 
-    def take(self, direction):
-        Piece.location[1] += 1
-        Piece.location[0] += direction
-        Piece.has_moved = True
-
 
 class Knight(Piece):
     def __init__(self, colour, location):
+        self.can_jump = True
         super().__init__(colour, location)
         self.img = (black_knight_img, white_knight_img)
 
@@ -60,8 +98,8 @@ class Bishop(Piece):
         self.img = (black_bishop_img, white_bishop_img)
 
     def can_move(self, destination):
-        if abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1]):
-            return True
+        if abs(destination[0] - self.location[0]) != abs(destination[1] - self.location[1]):
+            return super().check_path(self.location, destination)
         else:
             return False
 
@@ -76,7 +114,7 @@ class Rook(Piece):
 
     def can_move(self, destination):
         if (destination[0] == self.location[0]) | (destination[1] == self.location[1]):
-            return True
+            return super().check_path(self.location, destination)
         else:
             return False
 
@@ -92,7 +130,7 @@ class Queen(Piece):
     def can_move(self, destination):
         if ((destination[0] == self.location[0]) | (destination[1] == self.location[1])) | (
                 abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1])):
-            return True
+            return super().check_path(self.location, destination)
         else:
             return False
 

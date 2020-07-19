@@ -84,7 +84,6 @@ def left_click(position):
 
 
 def main():
-
     # initialize the pygame module
     init()
     # load and set the logo
@@ -92,7 +91,6 @@ def main():
     display.set_icon(logo)
     display.set_caption("Chess")
     # create a surface on screen
-
     populate()
     draw_pieces()
     display.flip()
