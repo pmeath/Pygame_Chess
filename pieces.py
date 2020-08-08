@@ -6,21 +6,24 @@ class Piece:
         self.colour = colour
         self.location = location
 
+    def __bool__(self):
+        return True
+
     def check_path(self, start, end):
         x1 = start[0]
         y1 = start[1]
         x2 = end[0]
         y2 = end[1]
-        if x2 - x1 < 0:
+        if x1 > x2:
             dx = -1
-        elif x2 - x1 > 0:
+        elif x2 > x1:
             dx = 1
         else:
             dx = 0
 
-        if y2 - y1 < 0:
+        if y1 > y2:
             dy = -1
-        elif y2 - y1 > 0:
+        elif y2 > y1:
             dy = 1
         else:
             dy = 0
@@ -29,20 +32,16 @@ class Piece:
             y = y1
             for x in range(x1 + dx, x2, dx):
                 y += dy
-                for i in pieces:
-                    if i.location == [x, y]:
-                        return False
+                if check_tile([x, y]):
+                    return False
         elif dy != 0:
             x = x1
             for y in range(y1 + dy, y2, dy):
                 x += dx
-                for i in pieces:
-                    if i.location == [x, y]:
-                        return False
+                if check_tile([x, y]):
+                    return False
 
         return True
-
-    can_jump = False
 
 
 class Pawn(Piece):
@@ -76,7 +75,6 @@ class Pawn(Piece):
 
 class Knight(Piece):
     def __init__(self, colour, location):
-        self.can_jump = True
         super().__init__(colour, location)
         self.img = (black_knight_img, white_knight_img)
 
@@ -98,7 +96,7 @@ class Bishop(Piece):
         self.img = (black_bishop_img, white_bishop_img)
 
     def can_move(self, destination):
-        if abs(destination[0] - self.location[0]) != abs(destination[1] - self.location[1]):
+        if abs(destination[0] - self.location[0]) == abs(destination[1] - self.location[1]):
             return super().check_path(self.location, destination)
         else:
             return False
@@ -111,10 +109,15 @@ class Rook(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
         self.img = (black_rook_img, white_rook_img)
+        self.has_moved = False
 
     def can_move(self, destination):
         if (destination[0] == self.location[0]) | (destination[1] == self.location[1]):
-            return super().check_path(self.location, destination)
+            if super().check_path(self.location, destination):
+                self.has_moved = True
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -147,7 +150,7 @@ class King(Piece):
     def can_move(self, destination):
 
         if (abs(destination[0] - self.location[0]) <= 1) & (abs(destination[1] - self.location[1]) <= 1):
-            Piece.has_moved = True
+            self.has_moved = True
             return True
         else:
             return False
@@ -155,10 +158,32 @@ class King(Piece):
     def can_take(self, destination):
         return self.can_move(destination)
 
+    def castle(self, destination):
+        if self.has_moved | (self.location[1] != destination[1]):  # check that the y coordinate is the same
+            return False
+        if destination[0] == 2:
+            castle_x = 0
+        elif destination[0] == 6:
+            castle_x = 7
+        else:
+            return False
 
-null_piece = Piece(-1, [-1, -1])
-active_piece = null_piece
+        if not super().check_path(self.location, (castle_x, self.colour * 7)):
+            return False
+
+        rook_object = check_tile([castle_x, self.colour * 7])
+        if isinstance(rook_object, Rook):
+            if rook_object.has_moved:
+                return False
+            else:
+                self.has_moved = True
+                return rook_object
+        else:
+            return False
+
+
 pieces = []
+active_piece = 0
 
 
 def populate():
@@ -174,3 +199,11 @@ def populate():
         pieces.append(Knight(c, [6, c * 7]))
         pieces.append(Queen(c, [3, c * 7]))
         pieces.append(King(c, [4, c * 7]))
+
+
+def check_tile(tile):
+    for j in pieces:
+        if j.location == tile:
+            return j
+
+    return False

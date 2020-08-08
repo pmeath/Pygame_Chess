@@ -49,11 +49,15 @@ def left_click(position):
     click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
     global pieces
     global active_piece
-    global null_piece
     for i in pieces:
         if i.location == tile_clicked:
-            if i == active_piece:  # deselect the piece
-                active_piece = null_piece
+            if active_piece == 0:   # select the piece
+                draw_pieces()
+                screen.blit(select_img, click_location)
+                display.flip()
+                active_piece = i
+            elif i == active_piece:  # deselect the piece
+                active_piece = 0
                 draw_pieces()
                 display.flip()
             elif i.colour == active_piece.colour:  # change selected piece
@@ -61,26 +65,32 @@ def left_click(position):
                 screen.blit(select_img, click_location)
                 display.flip()
                 active_piece = i
-            elif i.colour + active_piece.colour == 1:  # capture a piece
+            else:  # capture a piece
                 if active_piece.can_take(tile_clicked):
                     pieces.remove(i)
                     active_piece.location = tile_clicked
                 draw_pieces()
                 display.flip()
-                active_piece = null_piece
-            else:   # select a piece
-                draw_pieces()
-                screen.blit(select_img, click_location)
-                display.flip()
-                active_piece = i
+                active_piece = 0
+
             return
-    print(null_piece)
-    if active_piece != null_piece:  # move to an empty square
+    if active_piece:  # move to an empty square
         if active_piece.can_move(tile_clicked):
             active_piece.location = tile_clicked
+        elif isinstance(active_piece, King):    # castling
+            rook = active_piece.castle(tile_clicked)
+            if rook:
+                rook.has_moved = True
+                if rook.location[0]:
+                    rook.location[0] = 5   # right
+                    active_piece.location[0] = 6
+                else:
+                    rook.location[0] = 3   # left
+                    active_piece.location[0] = 2
+
         draw_pieces()
         display.flip()
-        active_piece = null_piece
+        active_piece = 0
 
 
 def main():
