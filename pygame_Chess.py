@@ -48,10 +48,11 @@ def left_click(position):
     tile_clicked = [(position[0] // tile_size[0]), (position[1] // tile_size[1])]
     click_location = (tile_clicked[0] * tile_size[0], tile_clicked[1] * tile_size[1])
     global pieces
+    global previous_moves
     global active_piece
     for i in pieces:
         if i.location == tile_clicked:
-            if active_piece == 0:   # select the piece
+            if active_piece == 0:  # select the piece
                 draw_pieces()
                 screen.blit(select_img, click_location)
                 display.flip()
@@ -67,6 +68,7 @@ def left_click(position):
                 active_piece = i
             else:  # capture a piece
                 if active_piece.can_take(tile_clicked):
+                    previous_moves.append((active_piece, active_piece.location, i))
                     pieces.remove(i)
                     active_piece.location = tile_clicked
                 draw_pieces()
@@ -76,16 +78,32 @@ def left_click(position):
             return
     if active_piece:  # move to an empty square
         if active_piece.can_move(tile_clicked):
+            previous_moves.append((active_piece, active_piece.location))
             active_piece.location = tile_clicked
-        elif isinstance(active_piece, King):    # castling
+
+        elif isinstance(active_piece, Pawn):
+            pawn = active_piece.en_passant(tile_clicked)
+            print(pawn)
+            if pawn:
+
+                for l in pieces:
+                    if l.location == pawn.location:
+                        previous_moves.append((active_piece, active_piece.location, l))
+                        pieces.remove(l)
+                        break
+                active_piece.location = tile_clicked
+
+        elif isinstance(active_piece, King):  # castling
             rook = active_piece.castle(tile_clicked)
             if rook:
+                previous_moves.append((active_piece, active_piece.location, rook, rook.location))
+                active_piece.has_moved = True
                 rook.has_moved = True
                 if rook.location[0]:
-                    rook.location[0] = 5   # right
+                    rook.location[0] = 5  # right
                     active_piece.location[0] = 6
                 else:
-                    rook.location[0] = 3   # left
+                    rook.location[0] = 3  # left
                     active_piece.location[0] = 2
 
         draw_pieces()

@@ -48,17 +48,15 @@ class Pawn(Piece):
     def __init__(self, colour, location):
         super().__init__(colour, location)
         self.img = (black_pawn_img, white_pawn_img)
-        self.has_moved = False
 
     def can_move(self, destination):
         if (destination[0] - self.location[0]) != 0:
             return False
         elif (destination[1] - self.location[1]) == 1 - (2 * self.colour):
-            self.has_moved = True
             return True
-        elif (self.has_moved is False) & ((destination[1] - self.location[1]) == 2 - (4 * self.colour)):
+        elif (self.location[1] == 1 + (self.colour * 5)) & (
+                (destination[1] - self.location[1]) == 2 - (4 * self.colour)):
             if super().check_path(self.location, destination):
-                self.has_moved = True
                 return True
             else:
                 return False
@@ -69,6 +67,20 @@ class Pawn(Piece):
         if ((destination[1] - self.location[1]) == 1 - (2 * self.colour)) & (
                 abs(destination[0] - self.location[0]) == 1):
             return True
+        else:
+            return False
+
+    def en_passant(self, destination):
+        if not self.can_take(destination):
+            return False
+        opponent_pawn = check_tile([destination[0], self.location[1]])
+        if not isinstance(opponent_pawn, Pawn):
+            return False  # no a pawn to take
+        pawn_origin = False
+        global previous_moves
+        if (previous_moves[-1][0] == opponent_pawn) and (
+                previous_moves[-1][1] == [destination[0], destination[1] + 1 - (2 * self.colour)]):
+            return opponent_pawn
         else:
             return False
 
@@ -176,13 +188,14 @@ class King(Piece):
             if rook_object.has_moved:
                 return False
             else:
-                self.has_moved = True
                 return rook_object
         else:
             return False
 
 
 pieces = []
+previous_moves = []  # list of tuples: (piece_moved, previous_location, piece_captured)
+# for castling: (King, previous_location, Rook, previous_location)
 active_piece = 0
 
 
