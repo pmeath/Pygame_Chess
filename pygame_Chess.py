@@ -1,15 +1,6 @@
 import pygame
 from pygame import *
-import os
-import sys
 from pieces import *
-
-
-def set_dir():
-    abspath = os.path.abspath(sys.argv[0])
-    dname = os.path.dirname(abspath)
-    os.chdir(dname)
-
 
 screen = display.set_mode((600, 600), HWSURFACE | DOUBLEBUF)
 tile_size = (int(screen.get_size()[0] / 8), int((screen.get_size()[1] / 8)))
@@ -61,7 +52,7 @@ def left_click(position):
                 active_piece = 0
                 draw_pieces()
                 display.flip()
-            elif i.colour == active_piece.colour:  # change selected piece
+            elif i.colour == active_piece.colour:  # change selected piece.
                 draw_pieces()
                 screen.blit(select_img, click_location)
                 display.flip()
@@ -71,6 +62,11 @@ def left_click(position):
                     previous_moves.append((active_piece, active_piece.location, i))
                     pieces.remove(i)
                     active_piece.location = tile_clicked
+
+                if isinstance(active_piece, Pawn):
+                    if active_piece.promotion(1):
+                        pieces.remove(active_piece)
+
                 draw_pieces()
                 display.flip()
                 active_piece = 0
@@ -80,12 +76,15 @@ def left_click(position):
         if active_piece.can_move(tile_clicked):
             previous_moves.append((active_piece, active_piece.location))
             active_piece.location = tile_clicked
+            if isinstance(active_piece, Pawn):
+                if active_piece.promotion(1):
+                    pieces.remove(active_piece)
 
-        elif isinstance(active_piece, Pawn):
+
+
+        elif isinstance(active_piece, Pawn):    # en passant
             pawn = active_piece.en_passant(tile_clicked)
-            print(pawn)
             if pawn:
-
                 for l in pieces:
                     if l.location == pawn.location:
                         previous_moves.append((active_piece, active_piece.location, l))

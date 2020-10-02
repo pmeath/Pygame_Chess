@@ -84,6 +84,13 @@ class Pawn(Piece):
         else:
             return False
 
+    def promotion(self, promotion):
+        if self.location[1] == 7 * (1 - self.colour):
+            pieces.append(Queen(self.colour, self.location))
+            return 1
+        else:
+            return 0
+
 
 class Knight(Piece):
     def __init__(self, colour, location):
@@ -194,13 +201,13 @@ class King(Piece):
 
 
 pieces = []
-previous_moves = []  # list of tuples: (piece_moved, previous_location, piece_captured)
+previous_moves = [(Piece(0, 0), [0, 0])]  # list of tuples: (piece_moved, previous_location, piece_captured)
 # for castling: (King, previous_location, Rook, previous_location)
 active_piece = 0
 
 
 def populate():
-    c = 0  # black is 0 and white is 1
+    c = 0  # 0 = black and 1 = white
     for c in range(2):
         for x in range(8):
             pieces.append(Pawn(c, [x, 1 + c * 5]))
